@@ -9,9 +9,11 @@ import SwiftUI
 
 @main
 struct RailSyncApp: App {
+    @StateObject private var appState = AppState()
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            ContentScreen()
+                .environmentObject(appState)
         }
     }
 }

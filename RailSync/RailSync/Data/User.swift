@@ -30,13 +30,3 @@ struct UserDTO: Codable{
     let Email: String?
     let Password: String?
 }
-
-struct CreateUserDTO: Codable {
-    var Email: String
-    var Password: String
-}
-
-struct LoginRequestDTO: Codable {
-    var Email: String
-    var Password: String
-}

@@ -28,41 +28,35 @@ struct SideMenuScreen: View {
             HStack {
                 VStack(alignment: .leading, spacing: 20) {
                     HStack {
-                        Image(systemName: "person.circle")
-                            .resizable()
-                            .frame(width: 40, height: 40)
-                        Text("Welcome, User")
-                            .font(.headline)
-                    }
-                    .padding(.top, 40)
-
-                    NavigationLink(destination: Text("Home View")) {
-                        Label("Home", systemImage: "house")
-                    }
-
-                    NavigationLink(destination: Text("Profile View")) {
-                        Label("Profile", systemImage: "person")
-                    }
-
-                    NavigationLink(destination: Text("Settings View")) {
-                        Label("Settings", systemImage: "gear")
-                    }
-
-                    Spacer()
-                    
-                    Button {
-                        AppState.shared.isLoggedIn = false
-                        showMenu = false
-                    } label: {
-                        HStack {
-                            Image(systemName: "rectangle.portrait.and.arrow.forward")
-                            Text("Sign Out")
+                        VStack {
+                            HStack {
+                                Image(systemName: "person.circle")
+                                    .resizable()
+                                    .frame(width: 40, height: 40)
+                                Text("Welcome, User")
+                                    .font(.headline)
+                            }
+                            .padding(.top, 40)
+                            Spacer(minLength: 20)
+                            Text("Challenges")
+                                .font(.headline)
+                            
+                            Spacer()
+                            
+                            Button {
+                                AppState.shared.isLoggedIn = false
+                                showMenu = false
+                            } label: {
+                                HStack {
+                                    Image(systemName: "rectangle.portrait.and.arrow.forward")
+                                    Text("Sign Out")
+                                }
+                                .foregroundStyle(Color.black)
+                                .padding(.bottom, 30)
+                            }
                         }
-                        .foregroundStyle(Color.black)
-                        .padding(.bottom)
+                        Spacer()
                     }
-
-                    
                     
                 }
                 .padding()

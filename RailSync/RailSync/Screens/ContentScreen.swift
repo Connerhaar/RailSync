@@ -14,13 +14,12 @@ struct ContentScreen: View {
     var body: some View {
         ZStack {
             if(!appState.isLoggedIn){
-                LoginView()
+                LoginScreen()
             } else {
-                ConversationView(showMenu: $showSideMenu)
-                    .padding(.vertical, 40)
+                ConversationScreen(showMenu: $showSideMenu).ignoresSafeArea(.keyboard)
             }
-            SideMenuView(showMenu: $showSideMenu, dragOffset: $dragOffset)
-        }
+            SideMenuScreen(showMenu: $showSideMenu, dragOffset: $dragOffset).ignoresSafeArea(.keyboard)
+        }.ignoresSafeArea(.keyboard)
     }
 }
 

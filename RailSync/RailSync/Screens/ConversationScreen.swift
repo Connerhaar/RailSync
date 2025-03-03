@@ -12,6 +12,7 @@ struct ConversationScreen: View {
     
     @StateObject private var conversationViewModel = ConversationViewModel()
     @StateObject private var keyboardResponder = KeyboardResponder()
+    @FocusState private var isTextFieldFocused: Bool
     
     @Binding var showMenu: Bool
     @State var userInput: String = ""
@@ -19,7 +20,6 @@ struct ConversationScreen: View {
     var body: some View {
         ZStack {
             Color.b100
-                .ignoresSafeArea(.all)
             
             VStack(alignment: .leading) {
                 ZStack {
@@ -51,35 +51,50 @@ struct ConversationScreen: View {
                     }
                     Spacer()
                 }
-                
+            }
+            .onTapGesture {
+                isTextFieldFocused = false
+            }
+            .padding(.vertical, 50)
+            .ignoresSafeArea(.keyboard)
+
+            .onAppear{
+                Task {
+//                    let conversationId = "c1042418-9e5d-41ac-bb68-1f2c0c674039"
+//                    await conversationViewModel.getConversation(userId: appState.userId, conversationId: conversationId)
+//                    await conversationViewModel.getAllConversations(userId: appState.userId)
+                }
+            }
+            VStack {
+                Spacer()
                 ZStack {
                     RoundedRectangle(cornerRadius: 30)
                         .ignoresSafeArea(.all)
-                        .frame(height: 80)
+                        .frame(height: 110)
                         .foregroundStyle(.t100)
                         .shadow(radius: 5)
                     
                     TextField("Ask a question", text: $userInput)
                         .font(.custom("Helvetica", size: 18))
                         .foregroundStyle(.black)
-                        .padding(EdgeInsets(top: 20, leading: 20, bottom: 20, trailing: 20))
+                        .padding(EdgeInsets(top: 20, leading: 20, bottom: 40, trailing: 20))
+                        .focused($isTextFieldFocused)
                         .onSubmit {
                             Task {
-                                await conversationViewModel.sendMessage(userId: appState.userId, conversationId: nil, message: userInput)
+                                let message = userInput
                                 userInput = ""
+                                if(message == ""){
+                                    isTextFieldFocused = false
+                                } else {
+                                    await conversationViewModel.sendMessage(userId: appState.userId, conversationId: nil, message: message)
+                                }
                             }
                         }
                 }
-                .padding(.bottom, keyboardResponder.keyboardHeight)
-                .animation(.easeOut(duration: 0.3), value: keyboardResponder.keyboardHeight)
-                
-            }
-            .onAppear{
-                Task {
-                    await conversationViewModel.getConversation(userId: appState.userId, conversationId: appState.viewedConversationId)
-                }
             }
         }
+        .ignoresSafeArea(.all)
+        .ignoresSafeArea(.keyboard)
     }
     // Separate method to break down complex expressions
     @ViewBuilder

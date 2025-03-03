@@ -7,27 +7,31 @@
 
 import Foundation
 
-public struct UserRequestDTO: Codable {
+struct UserRequestDTO: Codable {
     var Email: String
     var Password: String
 }
 
-public struct LoginRequestDTO: Codable {
+struct LoginRequestDTO: Codable {
     var Email: String
     var Password: String
 }
 
-public struct SpeakToAIRequestDTO: Codable {
+struct SpeakToAIRequestDTO: Codable {
     var UserID: UUID
-    var ConversationID: UUID
+    var ConversationID: UUID?
+    var AIMessage: String
+}
+struct NewSpeakToAIRequestDTO: Codable {
+    var UserID: UUID
     var AIMessage: String
 }
 
-public struct AllConversationRequestDTO: Codable {
+struct AllConversationRequestDTO: Codable {
     var UserID: String
 }
 
-public struct ConversationsRequestDTO: Codable {
+struct ConversationsRequestDTO: Codable {
     var ConversationID: String
     var UserID: String
 }

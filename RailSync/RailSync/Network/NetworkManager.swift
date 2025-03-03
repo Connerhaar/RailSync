@@ -23,6 +23,7 @@ actor NetworkManager {
             // Create HTTP Request iwth URL
             var request = URLRequest(url: url)
             request.httpMethod = requestType.rawValue
+            request.timeoutInterval = 60
             
             // Setup Body
             if let body = body {
@@ -34,10 +35,8 @@ actor NetworkManager {
             // Grab, Decode, then Return Data
             let (data, response) = try await URLSession.shared.data(for: request)
             let jsonString = String(data: data, encoding: .utf8)
-            let fixedJsonString = jsonString!.replacingOccurrences(of: "'", with: "\"")
-            let jsonData = fixedJsonString.data(using: .utf8)
-            print(response)
-            return try JSONDecoder().decode(T.self, from: jsonData!)
+            print(response, jsonString ?? "failed")
+            return try JSONDecoder().decode(T.self, from: data)
             
         } catch { throw NetworkError.unknown(error) }
     }
@@ -54,10 +53,10 @@ actor NetworkManager {
 //            completion(.failure(NSError(domain: "Invalid URL", code: 400)))
 //            return
 //        }
-//        
+//
 //        var request = URLRequest(url: requestUrl)
 //        request.httpMethod = type
-//        
+//
 //        if let body = body {
 //            do {
 //                request.httpBody = try JSONEncoder().encode(body)
@@ -67,18 +66,18 @@ actor NetworkManager {
 //                return
 //            }
 //        }
-//        
+//
 //        URLSession.shared.dataTask(with: request) { data, response, error in
 //            if let error = error {
 //                completion(.failure(error))
 //                return
 //            }
-//            
+//
 //            guard let data = data else {
 //                completion(.failure(NSError(domain: "No data received", code: 500)))
 //                return
 //            }
-//            
+//
 //            do {
 //                let decodedResponse = try JSONDecoder().decode(T.self, from: data)
 //                completion(.success(decodedResponse))

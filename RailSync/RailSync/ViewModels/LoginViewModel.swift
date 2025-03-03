@@ -7,33 +7,37 @@
 import SwiftUI
 import Combine
 
-actor LoginViewModel: ObservableObject{
+@MainActor
+class LoginViewModel: ObservableObject{
     @Published var currentUser: User? = nil
     
-    func createAccount(email: String, password: String, completion: @escaping (Bool) -> Void){
-        Task {
+    func createAccount(email: String, password: String, completion: @escaping (Bool) -> Void) async -> Bool {
             do {
-                let createUserRequest = CreateUserDTO(Email: email, Password: password)
+                let createUserRequest = UserRequestDTO(Email: email, Password: password)
                 let dto: UserDTO = try await NetworkManager.shared.request(endpoint: "/CreateUser", requestType: RequestType.POST, body: createUserRequest)
                 currentUser = User(dto: dto)
                 completion(true)
+                return true
             } catch {
                 completion(false)
-                handleError(error)} }
+                handleError(error)
+                return false
+            }
     
     }
     
-    func login(email: String, password: String, completion: @escaping (Bool) -> Void){
-        Task {
+    func login(email: String, password: String, completion: @escaping (Bool) -> Void) async -> Bool {
             do {
                 let loginRequest = LoginRequestDTO(Email: email, Password: password)
                 let dto: UserDTO = try await NetworkManager.shared.request(endpoint: "/LoginUser", requestType: RequestType.POST, body: loginRequest)
                 currentUser = User(dto: dto)
                 completion(true)
+                return true
             } catch {
                 completion(false)
-                handleError(error)}
-        }
+                handleError(error)
+                return false
+            }
     }
     
 }

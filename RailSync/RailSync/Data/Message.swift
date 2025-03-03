@@ -7,7 +7,10 @@
 
 import Foundation
 
-public struct Message: Hashable {
+// Message
+public struct Message: Identifiable {
+    public var id = UUID()
+    
     var role: String = ""
     var content: [MessageContent] = []
     
@@ -21,28 +24,25 @@ public struct Message: Hashable {
         self.role = dto.role
         self.content = dto.content.map{MessageContent(dto: $0)}
     }
+    
+    init(returnedMessage: String) {
+        self.role = "assistant"
+        self.content = [MessageContent(type: "text" , text: returnedMessage)]
+    }
+    init(sentMessage: String) {
+        self.role = "user"
+        self.content = [MessageContent(type: "text" , text: sentMessage)]
+    }
 }
 
-public struct Item: Decodable {
-    var Item: ConversationData
-}
-
-public struct ConversationData: Decodable{
-    var ConversationID: UUID
-    var UserID: UUID
-    var Messages: String
-
-}
-
-public struct MessageDTO: Decodable {
+public struct MessageDTO: Codable {
     var role: String = ""
     var content: [MessageContentDTO] = []
 }
 
-
-
-
-public struct MessageContent: Hashable {
+// Message Content
+public struct MessageContent: Identifiable {
+    public var id = UUID()
     var type: String = ""
     var text: String = ""
     
@@ -58,11 +58,13 @@ public struct MessageContent: Hashable {
     
 }
 
-public struct MessageContentDTO: Decodable {
+public struct MessageContentDTO: Codable {
     var type: String = ""
     var text: String
 }
 
-public struct Data: Encodable {
-    
+public struct AiResponseDTO: Codable {
+    var Response: String = ""
+    var ConversationID: UUID
 }
+

@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct userMessage: View {
-    @Binding var message: String
+    @State var message: String
     var body: some View {
         
         HStack {
@@ -29,7 +29,7 @@ struct userMessage: View {
 }
 
 struct aiMessage: View {
-    @Binding var message: String
+    @State var message: String
     var body: some View {
         
         HStack {
@@ -46,7 +46,7 @@ struct aiMessage: View {
 }
 
 #Preview {
-    userMessage(message: .constant("Hello World"))
-    aiMessage(message: .constant("Super long tex that is actually insane and why is this so long probably because this will be a good exmple of what htings will look like"))
-    userMessage(message: .constant("Super long tex that is actually insane and why is this so long probably because this will be a good exmple of what htings will look like"))
+    userMessage(message: "Hello World")
+    aiMessage(message: "Super long tex that is actually insane and why is this so long probably because this will be a good exmple of what htings will look like")
+    userMessage(message: "Super long tex that is actually insane and why is this so long probably because this will be a good exmple of what htings will look like")
 }

@@ -96,7 +96,7 @@ struct LoginScreen: View {
                                 await MainActor.run{
                                     appState.isLoggedIn = isSuccessful
                                 }
-                                await appState.userId = loginViewModel.currentUser?.id.uuidString ?? ""
+                                appState.userId = loginViewModel.currentUser?.id.uuidString ?? ""
                             }
                         }){
                             Capsule().fill(Color.b700)
