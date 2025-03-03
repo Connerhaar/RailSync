@@ -7,13 +7,13 @@
 
 import SwiftUI
 
-struct SideMenuView: View {
+struct SideMenuScreen: View {
     @Binding var showMenu: Bool
     @Binding var dragOffset: CGSize // Track the drag offset
     private let menuWidth = UIScreen.main.bounds.width * 0.8 // 80% of screen width
 
     var body: some View {
-        ZStack {
+        ZStack(alignment: .bottom) {
             // Background overlay to dismiss menu when tapped
             if(showMenu) {
                 Color.black.opacity(0.4)
@@ -49,6 +49,21 @@ struct SideMenuView: View {
                     }
 
                     Spacer()
+                    
+                    Button {
+                        AppState.shared.isLoggedIn = false
+                        showMenu = false
+                    } label: {
+                        HStack {
+                            Image(systemName: "rectangle.portrait.and.arrow.forward")
+                            Text("Sign Out")
+                        }
+                        .foregroundStyle(Color.black)
+                        .padding(.bottom)
+                    }
+
+                    
+                    
                 }
                 .padding()
                 .frame(width: menuWidth, height: UIScreen.main.bounds.height) // Dynamic width
@@ -89,5 +104,5 @@ struct SideMenuView: View {
 }
 
 #Preview {
-    SideMenuView(showMenu: .constant(true), dragOffset: .constant(CGSize()))
+    SideMenuScreen(showMenu: .constant(true), dragOffset: .constant(CGSize()))
 }

@@ -7,22 +7,18 @@
 
 import SwiftUI
 
-struct ContentView: View {
-    @State private var loggedIn: Bool = false
+struct ContentScreen: View {
+    @ObservedObject var appState = AppState.shared
     @State private var showSideMenu: Bool = false
     @State private var dragOffset = CGSize.zero
     var body: some View {
         ZStack {
-            if(!loggedIn){
-                withAnimation {
-                    LoginView(loggedIn: $loggedIn)
-                }
+            if(!appState.isLoggedIn){
+                LoginView()
             } else {
-                withAnimation {
-                    MessageView(showMenu: $showSideMenu)
-                }
+                ConversationView(showMenu: $showSideMenu)
+                    .padding(.vertical, 40)
             }
-            
             SideMenuView(showMenu: $showSideMenu, dragOffset: $dragOffset)
         }
     }
@@ -31,5 +27,5 @@ struct ContentView: View {
 
 
 #Preview {
-    ContentView()
+    ContentScreen()
 }

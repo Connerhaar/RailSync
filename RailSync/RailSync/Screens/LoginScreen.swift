@@ -9,17 +9,13 @@ import SwiftUI
 
 
 
-struct LoginView: View {
-    @Binding var loggedIn: Bool
-    
+struct LoginScreen: View {
+    @ObservedObject var appState = AppState.shared
     @StateObject private var loginViewModel = LoginViewModel()
     
     @State private var emailAddress: String = ""
     @State private var password: String = ""
     @State private var pageState: PageState = .login
-    
-//    @FocusState private var emailFocusState: Focus?
-//    @FocusState private var passwordFocusState: Focus?
    
     
     var body: some View {
@@ -91,15 +87,16 @@ struct LoginView: View {
                         // Login Button
                         let buttonText: String = if(pageState == .login){"Log in"} else {"Create Account"}
                         Button(action: {
-                            
-                            if pageState == .login{
-                                loginViewModel.login(email: emailAddress, password: password){success in
-                                    loggedIn = success
+                            Task {
+                                let isSuccessful = if pageState == .login{
+                                    await loginViewModel.login(email: emailAddress, password: password){_ in }
+                                } else {
+                                    await loginViewModel.createAccount(email: emailAddress, password: password){_ in }
                                 }
-                            } else {
-                                loginViewModel.createAccount(email: emailAddress, password: password){success in
-                                    loggedIn = success
+                                await MainActor.run{
+                                    appState.isLoggedIn = isSuccessful
                                 }
+                                await appState.userId = loginViewModel.currentUser?.id.uuidString ?? ""
                             }
                         }){
                             Capsule().fill(Color.b700)
@@ -158,5 +155,5 @@ enum Focus: Hashable {
 
 
 #Preview {
-    LoginView(loggedIn: .constant(false))
+    LoginScreen()
 }
