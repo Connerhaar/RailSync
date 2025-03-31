@@ -11,13 +11,18 @@ import SwiftUI
 
 struct LoginScreen: View {
     @ObservedObject var appState = AppState.shared
+    @ObservedObject var navController = NavController.shared
     @StateObject private var loginViewModel = LoginViewModel()
     
     @State private var emailAddress: String = ""
     @State private var password: String = ""
     @State private var pageState: PageState = .login
-   
     
+    @FocusState private var focusedField: FocusedField?
+    
+    enum FocusedField {
+        case emailFocus, passwordFocus
+    }
     var body: some View {
         NavigationStack{
             ZStack{
@@ -26,6 +31,9 @@ struct LoginScreen: View {
                     startPoint: .bottomTrailing,
                     endPoint: .topLeading)
                 .edgesIgnoringSafeArea(.all)
+                .onTapGesture {
+                    focusedField = nil
+                }
                 
                 VStack{
                     Spacer().frame(height: 100)
@@ -53,6 +61,11 @@ struct LoginScreen: View {
                                 .font(.custom("Helvetica", size: 14))
                                 .padding(.vertical, 10)
                                 .textContentType(.emailAddress)
+                                .focused($focusedField, equals: .emailFocus)
+                                .onSubmit{
+                                    focusedField = .passwordFocus
+                                }
+                                
                         }
                         .overlay(RoundedRectangle(cornerRadius:5).stroke(Color.b700, lineWidth: 1))
                         .padding(.horizontal, 20)
@@ -71,6 +84,10 @@ struct LoginScreen: View {
                                 .font(.custom("Helvetica", size: 14))
                                 .padding(.vertical, 10)
                                 .textContentType(.newPassword)
+                                .focused($focusedField, equals: .passwordFocus)
+                                .onSubmit{
+                                    focusedField = nil
+                                }
                             
                             
                         }
@@ -95,6 +112,9 @@ struct LoginScreen: View {
                                 }
                                 await MainActor.run{
                                     appState.isLoggedIn = isSuccessful
+                                    if(appState.isLoggedIn){
+                                        navController.currentScreen = .conversation
+                                    }
                                 }
                                 appState.userId = loginViewModel.currentUser?.id.uuidString ?? ""
                             }

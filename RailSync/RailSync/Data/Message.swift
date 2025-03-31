@@ -8,7 +8,7 @@
 import Foundation
 
 // Message
-public struct Message: Identifiable {
+public struct Message: Identifiable, Codable {
     public var id = UUID()
     
     var role: String = ""
@@ -41,7 +41,7 @@ public struct MessageDTO: Codable {
 }
 
 // Message Content
-public struct MessageContent: Identifiable {
+public struct MessageContent: Identifiable, Codable {
     public var id = UUID()
     var type: String = ""
     var text: String = ""

@@ -12,6 +12,7 @@ import Combine
 class ConversationViewModel: ObservableObject{
     @Published var allConversations: [Conversation] = []
     @Published var viewedConversation: [Message] = []
+    @Published var aiTyping: Bool = false
     
     
     func getAllConversations(userId: String) async {
@@ -34,6 +35,7 @@ class ConversationViewModel: ObservableObject{
         do {
             let sentMessage: Message = Message(sentMessage: message)
             self.viewedConversation.append(sentMessage)
+            aiTyping = true
             let requestBody: Encodable = if(conversationId == nil){
                 NewSpeakToAIRequestDTO(UserID: UUID(uuidString: userId)!, AIMessage: message)
             } else {
@@ -43,9 +45,11 @@ class ConversationViewModel: ObservableObject{
             let dto: AiResponseDTO = try await NetworkManager.shared.request(endpoint: "/SpeakToAI", requestType: RequestType.POST, body: requestBody)
             print("response: \(dto)")
             let responseMessage = Message(returnedMessage: dto.Response)
-            AppState.shared.viewedConversationId = dto.ConversationID.uuidString
+            aiTyping = false
+//            AppState.shared.viewedConversationId = dto.ConversationID.uuidString
             viewedConversation.append(responseMessage)
         } catch {
+            aiTyping = false
             print(error)
             handleError(error) }
     }
@@ -63,7 +67,7 @@ class ConversationViewModel: ObservableObject{
             let dto: AiResponseDTO = try await NetworkManager.shared.request(endpoint: "/FRARegulations", requestType: RequestType.POST, body: requestBody)
             print("response: \(dto)")
             let responseMessage = Message(returnedMessage: dto.Response)
-            AppState.shared.viewedConversationId = dto.ConversationID.uuidString
+//            AppState.shared.viewedConversationId = dto.ConversationID.uuidString
             viewedConversation.append(responseMessage)
         } catch {
             print(error)
@@ -83,11 +87,21 @@ class ConversationViewModel: ObservableObject{
             let dto: AiResponseDTO = try await NetworkManager.shared.request(endpoint: "/SpeakAbouts-60", requestType: RequestType.POST, body: requestBody)
             print("response: \(dto)")
             let responseMessage = Message(returnedMessage: dto.Response)
-            AppState.shared.viewedConversationId = dto.ConversationID.uuidString
+//            AppState.shared.viewedConversationId = dto.ConversationID.uuidString
             viewedConversation.append(responseMessage)
         } catch {
             print(error)
             handleError(error) }
+    }
+    
+    func deleteConversation(userId: String, conversationId: String) async{
+        do {
+            viewedConversation = []
+            let conversationDeletionDTO = DeleteConversationDTO(UserID: userId, ConversationID: conversationId)
+            try await NetworkManager.shared.request(endpoint: "/DeleteConversation", requestType: RequestType.POST, body: conversationDeletionDTO)
+        } catch {
+            handleError(error)
+        }
     }
     
 }

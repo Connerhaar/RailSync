@@ -9,17 +9,24 @@ import SwiftUI
 
 struct ContentScreen: View {
     @ObservedObject var appState = AppState.shared
-    @State private var showSideMenu: Bool = false
+    @ObservedObject var navController = NavController.shared
     @State private var dragOffset = CGSize.zero
     var body: some View {
-        ZStack {
-            if(!appState.isLoggedIn){
-                LoginScreen()
-            } else {
-                ConversationScreen(showMenu: $showSideMenu).ignoresSafeArea(.keyboard)
+        ZStack{
+            VStack{
+                switch NavController.shared.currentScreen {
+                case .loading:
+                    LoadingScreen()
+                case .login:
+                    LoginScreen()
+                case .conversation:
+                    ConversationScreen()
+                }
             }
-            SideMenuScreen(showMenu: $showSideMenu, dragOffset: $dragOffset).ignoresSafeArea(.keyboard)
-        }.ignoresSafeArea(.keyboard)
+            if(navController.showSideMenu){
+                SideMenuScreen()
+            }
+        }
     }
 }
 

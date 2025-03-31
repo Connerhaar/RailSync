@@ -36,7 +36,36 @@ actor NetworkManager {
             let (data, response) = try await URLSession.shared.data(for: request)
             let jsonString = String(data: data, encoding: .utf8)
             print(response, jsonString ?? "failed")
-            return try JSONDecoder().decode(T.self, from: data)
+            let returnable = try JSONDecoder().decode(T.self, from: data)
+            return returnable
+            
+        } catch { throw NetworkError.unknown(error) }
+    }
+    
+    func request(endpoint: String, requestType: RequestType, body: Encodable? = nil) async throws {
+        
+        do {
+            // Check for valid URL
+            guard let url = URL(string: baseURL + endpoint) else {
+                throw NetworkError.invalidURL
+            }
+            
+            // Create HTTP Request iwth URL
+            var request = URLRequest(url: url)
+            request.httpMethod = requestType.rawValue
+            request.timeoutInterval = 60
+            
+            // Setup Body
+            if let body = body {
+                request.httpBody = try JSONEncoder().encode(body)
+                request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+                
+            }
+            
+            // Grab, Decode, then Return Data
+            let (data, response) = try await URLSession.shared.data(for: request)
+            let jsonString = String(data: data, encoding: .utf8)
+            print(response, jsonString ?? "failed")
             
         } catch { throw NetworkError.unknown(error) }
     }

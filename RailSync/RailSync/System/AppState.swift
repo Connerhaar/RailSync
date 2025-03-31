@@ -16,7 +16,10 @@ class AppState: ObservableObject {
     init() {
         self.isLoggedIn = defaults.bool(forKey: "isLoggedIn")
         self.userId = defaults.string(forKey: "userId") ?? ""
-        self.viewedConversationId = defaults.string(forKey: "viewedConversationId") ?? ""
+        
+        // Remove the stored conversation every time the app launches
+        defaults.removeObject(forKey: "viewedConversation")
+        self.viewedConversation = nil
     }
     
     @Published var isLoggedIn: Bool {
@@ -27,17 +30,26 @@ class AppState: ObservableObject {
         didSet { defaults.set(userId, forKey: "userId") }
     }
     
-    @Published var viewedConversationId: String {
-        didSet { defaults.set(userId, forKey: "viewedConversationId") }
+    @Published var viewedConversation: Conversation? {
+        didSet {
+            if let conversation = viewedConversation {
+                if let encodedData = try? JSONEncoder().encode(conversation) {
+                    defaults.set(encodedData, forKey: "viewedConversation")
+                }
+            } else {
+                defaults.removeObject(forKey: "viewedConversation")
+            }
+        }
     }
+    
     
     func clearUserData() {
         defaults.removeObject(forKey: "isLoggedIn")
         defaults.removeObject(forKey: "userId")
-        defaults.removeObject(forKey: "viewedConversationId")
+        defaults.removeObject(forKey: "viewedConversation")
         self.isLoggedIn = false
         self.userId = ""
-        self.viewedConversationId = ""
+        self.viewedConversation = nil
     }
     
     
