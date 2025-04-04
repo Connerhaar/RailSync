@@ -14,6 +14,10 @@ class ConversationViewModel: ObservableObject{
     @Published var viewedConversation: [Message] = []
     @Published var aiTyping: Bool = false
     
+    private init() {}
+
+    static let shared = ConversationViewModel()
+    
     
     func getAllConversations(userId: String) async {
             do {
@@ -97,6 +101,7 @@ class ConversationViewModel: ObservableObject{
     func deleteConversation(userId: String, conversationId: String) async{
         do {
             viewedConversation = []
+            allConversations.removeAll{ $0.id == conversationId }
             let conversationDeletionDTO = DeleteConversationDTO(UserID: userId, ConversationID: conversationId)
             try await NetworkManager.shared.request(endpoint: "/DeleteConversation", requestType: RequestType.POST, body: conversationDeletionDTO)
         } catch {

@@ -10,8 +10,8 @@ import SwiftUI
 struct ConversationScreen: View {
     @ObservedObject var appState = AppState.shared
     @ObservedObject var navController = NavController.shared
-    
-    @StateObject private var conversationViewModel = ConversationViewModel()
+    @ObservedObject var conversationViewModel = ConversationViewModel.shared
+
     @StateObject private var keyboardResponder = KeyboardResponder()
     @FocusState private var isTextFieldFocused: Bool
     
@@ -124,6 +124,11 @@ struct ConversationScreen: View {
             }
             .onChange(of: AppState.shared.viewedConversation) {
                 conversationViewModel.viewedConversation = AppState.shared.viewedConversation?.messages ?? []
+            }
+        }
+        .onAppear(){
+            Task{
+                await conversationViewModel.getAllConversations(userId: AppState.shared.userId)
             }
         }
         .ignoresSafeArea()

@@ -11,6 +11,10 @@ import Combine
 class LoginViewModel: ObservableObject{
     @Published var currentUser: User? = nil
     
+    @Published var invalidEmail: Bool = false
+    @Published var emailAlreadyExists: Bool = false
+    @Published var invalidPassword: Bool = false
+    
     func createAccount(email: String, password: String, completion: @escaping (Bool) -> Void) async -> Bool {
             do {
                 let createUserRequest = UserRequestDTO(Email: email, Password: password)

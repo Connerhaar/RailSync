@@ -33,9 +33,18 @@ actor NetworkManager {
             }
             
             // Grab, Decode, then Return Data
+            
             let (data, response) = try await URLSession.shared.data(for: request)
-            let jsonString = String(data: data, encoding: .utf8)
-            print(response, jsonString ?? "failed")
+            
+            guard let httpResponse = response as? HTTPURLResponse else {
+                throw NetworkError.noData
+            }
+            
+            if !(200...299).contains(httpResponse.statusCode) {
+                let message = httpResponse.description
+                throw NetworkError.requestFailed(statusCode: httpResponse.statusCode, message: message)
+            }
+            
             let returnable = try JSONDecoder().decode(T.self, from: data)
             return returnable
             
@@ -69,52 +78,6 @@ actor NetworkManager {
             
         } catch { throw NetworkError.unknown(error) }
     }
-    
-    
-//    func request<T: Decodable>(
-//        url: String,
-//        type: String,
-//        body: Encodable? = nil,
-//        returnType: T.Type,
-//        completion: @escaping (Result<T, Error>) -> Void
-//    ) {
-//        guard let requestUrl = URL(string: url) else {
-//            completion(.failure(NSError(domain: "Invalid URL", code: 400)))
-//            return
-//        }
-//
-//        var request = URLRequest(url: requestUrl)
-//        request.httpMethod = type
-//
-//        if let body = body {
-//            do {
-//                request.httpBody = try JSONEncoder().encode(body)
-//                request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-//            } catch {
-//                completion(.failure(error))
-//                return
-//            }
-//        }
-//
-//        URLSession.shared.dataTask(with: request) { data, response, error in
-//            if let error = error {
-//                completion(.failure(error))
-//                return
-//            }
-//
-//            guard let data = data else {
-//                completion(.failure(NSError(domain: "No data received", code: 500)))
-//                return
-//            }
-//
-//            do {
-//                let decodedResponse = try JSONDecoder().decode(T.self, from: data)
-//                completion(.success(decodedResponse))
-//            } catch {
-//                completion(.failure(error))
-//            }
-//        }.resume()
-//    }
 }
 
 enum NetworkError: Error {
