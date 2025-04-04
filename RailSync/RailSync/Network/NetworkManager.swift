@@ -39,6 +39,7 @@ actor NetworkManager {
             guard let httpResponse = response as? HTTPURLResponse else {
                 throw NetworkError.noData
             }
+            print(httpResponse)
             
             if !(200...299).contains(httpResponse.statusCode) {
                 let message = httpResponse.description
