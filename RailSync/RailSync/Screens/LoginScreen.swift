@@ -69,6 +69,9 @@ struct LoginScreen: View {
                                 .padding(.vertical, 10)
                                 .textContentType(.emailAddress)
                                 .focused($focusedField, equals: .emailFocus)
+                                .onChange(of: emailAddress){
+                                    invalidEmail = false
+                                }
                                 .onSubmit{
                                     focusedField = .passwordFocus
                                 }
@@ -157,17 +160,18 @@ struct LoginScreen: View {
                             Task {
                                 isLoading = true
                                 let isSuccessful = if pageState == .login{
-                                    await loginViewModel.login(email: emailAddress, password: password){_ in }
+                                    await loginViewModel.login(email: emailAddress, password: password){isSuccessful, statusCode in
+                                        appState.isLoggedIn = isSuccessful
+                                        invalidEmail = statusCode == 404
+                                    }
                                 } else {
-                                    await loginViewModel.createAccount(email: emailAddress, password: password){_ in }
+                                    await loginViewModel.createAccount(email: emailAddress, password: password){isSuccessful, statusCode in
+                                        appState.isLoggedIn = isSuccessful
+                                    }
                                 }
                                 isLoading = false
-                                
-                                await MainActor.run{
-                                    appState.isLoggedIn = isSuccessful
-                                    if(appState.isLoggedIn){
-                                        navController.currentScreen = .conversation
-                                    }
+                                if(appState.isLoggedIn){
+                                    navController.currentScreen = .conversation
                                 }
                                 appState.userId = loginViewModel.currentUser?.id.uuidString ?? ""
                             }
@@ -193,6 +197,8 @@ struct LoginScreen: View {
                                 } else {
                                     pageState = .login
                                 }
+                                invalidEmail = false
+                                invalidPassword = false
                                 
                             }
                             .font(.system(size: 12))

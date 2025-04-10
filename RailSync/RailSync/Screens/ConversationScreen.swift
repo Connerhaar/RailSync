@@ -18,9 +18,23 @@ struct ConversationScreen: View {
     @State private var title: String = "RailSync"
     @State var userInput: String = ""
     
+    @State var selectedManual: ManualSelection = .s60
+    
+    let manuals = [
+        ManualSelection.s60,
+        ManualSelection.fra,
+        ManualSelection.all
+    ]
+    
+    enum ManualSelection {
+        case s60
+        case fra
+        case all
+    }
+    
     var body: some View {
         ZStack {
-            Color.b100.ignoresSafeArea()
+            Color.t200.ignoresSafeArea()
 
             VStack {
                 // Top Bar
@@ -90,7 +104,35 @@ struct ConversationScreen: View {
                         }
                     }
                 }
+                
                 // TextField at the Bottom
+                
+                VStack{
+                    Spacer()
+                    ScrollView(.horizontal) {
+                        LazyHStack(alignment: .bottom) {
+                            ForEach(manuals, id: \.self) { manual in
+                                let manualName: String = switch manual{
+                                case .s60:
+                                    "S-60 Manual"
+                                case .fra:
+                                    "FRA Manual"
+                                case .all:
+                                    "All"
+                                }
+                                    
+                                
+                                ManualButtonSelect(
+                                    isSelected: selectedManual == manual,
+                                    buttonName: manualName
+                                ) {
+                                    selectedManual = manual
+                                }
+                            }
+                        }
+                        .padding(.horizontal)
+                        .padding(.bottom, 10)
+                    }
                     HStack {
                         TextField("Ask a question", text: $userInput)
                             .font(.custom("Helvetica", size: 18))
@@ -115,6 +157,7 @@ struct ConversationScreen: View {
                     .padding(.horizontal)
                     .ignoresSafeArea(.all)
                     .adaptsToKeyboard()
+                }
 
             }
             .padding(.top, 50)

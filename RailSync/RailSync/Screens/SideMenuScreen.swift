@@ -35,6 +35,7 @@ struct SideMenuScreen: View {
                             VStack(alignment: .leading) {
                                     Text("Conversations")
                                         .font(.headline)
+                                        .foregroundStyle(.t800)
                                         .fontWeight(.bold)
                                     Divider()
                                 ScrollView(showsIndicators: false){
@@ -57,6 +58,7 @@ struct SideMenuScreen: View {
                                         }
                                     }.frame(maxHeight: .infinity)
                                 Divider()
+                                Spacer(minLength: 15)
                                 Button {
                                     AppState.shared.isLoggedIn = false
                                     navController.showSideMenu = false
@@ -64,7 +66,9 @@ struct SideMenuScreen: View {
                                 } label: {
                                     HStack {
                                         Image(systemName: "rectangle.portrait.and.arrow.forward")
+                                            .foregroundStyle(.t800)
                                         Text("Sign Out")
+                                            .foregroundStyle(.t800)
                                     }
                                     .foregroundStyle(Color.black)
                                     .padding(.bottom, 30)
@@ -79,10 +83,18 @@ struct SideMenuScreen: View {
                     //                .offset(x: navController.showSideMenu ? dragOffset.width : -menuWidth) // Slide with the gesture
                     .animation(.easeInOut(duration: 0.3), value: navController.showSideMenu) // Smooth transition
                     
-                    if(conversationViewModel.allConversations.isEmpty){
+                    if(conversationViewModel.allConversationsLoading){
                         ProgressView()
                             .progressViewStyle(CircularProgressViewStyle(tint: Color.b900))
                             .scaleEffect(1.5)
+                    }
+                    VStack{
+                        HStack{
+                            if(!conversationViewModel.allConversationsLoading && conversationViewModel.allConversations.isEmpty){
+                                Text("No Conversations")
+                                    .foregroundStyle(.t500)
+                            }
+                        }
                     }
                 }
                 Spacer()

@@ -12,6 +12,7 @@ actor NetworkManager {
     
     private init() {}
     
+    // Expecting a Return
     func request<T: Decodable>(endpoint: String, requestType: RequestType, body: Encodable? = nil) async throws -> T {
         
         do {
@@ -29,7 +30,6 @@ actor NetworkManager {
             if let body = body {
                 request.httpBody = try JSONEncoder().encode(body)
                 request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-                
             }
             
             // Grab, Decode, then Return Data
@@ -39,19 +39,21 @@ actor NetworkManager {
             guard let httpResponse = response as? HTTPURLResponse else {
                 throw NetworkError.noData
             }
-            print(httpResponse)
+            
             
             if !(200...299).contains(httpResponse.statusCode) {
-                let message = httpResponse.description
-                throw NetworkError.requestFailed(statusCode: httpResponse.statusCode, message: message)
+                throw NetworkError.requestFailed(statusCode: httpResponse.statusCode, message: httpResponse.description)
+            } else {
+                print(httpResponse)
             }
             
             let returnable = try JSONDecoder().decode(T.self, from: data)
             return returnable
             
-        } catch { throw NetworkError.unknown(error) }
+        } catch { throw error }
     }
     
+    // No Expected Return Value
     func request(endpoint: String, requestType: RequestType, body: Encodable? = nil) async throws {
         
         do {
@@ -69,15 +71,22 @@ actor NetworkManager {
             if let body = body {
                 request.httpBody = try JSONEncoder().encode(body)
                 request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-                
             }
             
             // Grab, Decode, then Return Data
-            let (data, response) = try await URLSession.shared.data(for: request)
-            let jsonString = String(data: data, encoding: .utf8)
-            print(response, jsonString ?? "failed")
+            let (_, response) = try await URLSession.shared.data(for: request)
             
-        } catch { throw NetworkError.unknown(error) }
+            guard let httpResponse = response as? HTTPURLResponse else {
+                throw NetworkError.noData
+            }
+            
+            if !(200...299).contains(httpResponse.statusCode) {
+                throw NetworkError.requestFailed(statusCode: httpResponse.statusCode, message: httpResponse.description)
+            } else {
+                print(httpResponse)
+            }
+            
+        } catch { throw error }
     }
 }
 

@@ -33,7 +33,7 @@ struct LoadingScreen: View {
                             .speed(0.1).repeatForever(autoreverses: false)) {
                                 degreesRotating = 360.0
                             }
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
                             if(appState.isLoggedIn){
                                 navController.currentScreen = .conversation
                             } else {

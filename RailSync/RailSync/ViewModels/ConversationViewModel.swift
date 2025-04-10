@@ -10,6 +10,7 @@ import Combine
 
 @MainActor
 class ConversationViewModel: ObservableObject{
+    @Published var allConversationsLoading: Bool = false
     @Published var allConversations: [Conversation] = []
     @Published var viewedConversation: [Message] = []
     @Published var aiTyping: Bool = false
@@ -21,8 +22,10 @@ class ConversationViewModel: ObservableObject{
     
     func getAllConversations(userId: String) async {
             do {
+                allConversationsLoading = true
                 let requestBody: AllConversationRequestDTO = AllConversationRequestDTO(UserID: userId)
                 let dto: [ConversationDTO] = try await NetworkManager.shared.request(endpoint: "/GetAllConversations", requestType: RequestType.POST, body: requestBody)
+                allConversationsLoading = false
                 allConversations = dto.map({Conversation(dto: $0)})
             } catch { handleError(error) }
     }
