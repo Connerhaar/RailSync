@@ -20,7 +20,7 @@ struct SideMenuScreen: View {
             // Background overlay to dismiss menu when tapped
             if(navController.showSideMenu) {
                 Color.black.opacity(0.4)
-                    .ignoresSafeArea()
+                    .ignoresSafeArea(.all)
                     .onTapGesture {
                         withAnimation {
                             navController.showSideMenu = false
@@ -31,7 +31,6 @@ struct SideMenuScreen: View {
             HStack {
                 ZStack {
                     VStack(alignment: .leading, spacing: 20) {
-                        HStack {
                             VStack(alignment: .leading) {
                                     Text("Conversations")
                                         .font(.headline)
@@ -56,7 +55,8 @@ struct SideMenuScreen: View {
                                                 }
                                             }
                                         }
-                                    }.frame(maxHeight: .infinity)
+                                    }
+                                .frame(maxHeight: .infinity)
                                 Divider()
                                 Spacer(minLength: 15)
                                 Button {
@@ -73,13 +73,13 @@ struct SideMenuScreen: View {
                                     .foregroundStyle(Color.black)
                                     .padding(.bottom, 30)
                                 }
-                            }.padding(.vertical, 30)
-                        }
-                        
+                            }
+                            .padding(.vertical, 30)
+                    
                     }
                     .padding()
                     .frame(width: menuWidth, height: UIScreen.main.bounds.height) // Dynamic width
-                    .background(Color.white)
+                    .background(Color.b100)
                     //                .offset(x: navController.showSideMenu ? dragOffset.width : -menuWidth) // Slide with the gesture
                     .animation(.easeInOut(duration: 0.3), value: navController.showSideMenu) // Smooth transition
                     

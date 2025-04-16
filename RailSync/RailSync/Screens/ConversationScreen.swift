@@ -84,7 +84,7 @@ struct ConversationScreen: View {
 
                 // Messages
                 ScrollViewReader { scrollView in
-                    ScrollView {
+                    ScrollView(.vertical) {
                         LazyVStack {
                             ForEach(conversationViewModel.viewedConversation.indices, id: \.self) { index in
                                 messageView(for: conversationViewModel.viewedConversation[index])
@@ -106,37 +106,38 @@ struct ConversationScreen: View {
                 }
                 
                 // TextField at the Bottom
-                
-                VStack{
-                    Spacer()
-                    ScrollView(.horizontal) {
-                        LazyHStack(alignment: .bottom) {
-                            ForEach(manuals, id: \.self) { manual in
-                                let manualName: String = switch manual{
-                                case .s60:
-                                    "S-60 Manual"
-                                case .fra:
-                                    "FRA Manual"
-                                case .all:
-                                    "All"
-                                }
-                                    
-                                
-                                ManualButtonSelect(
-                                    isSelected: selectedManual == manual,
-                                    buttonName: manualName
-                                ) {
-                                    selectedManual = manual
-                                }
+    
+                ScrollView(.horizontal) {
+                    LazyHStack(alignment: .bottom) {
+                        ForEach(manuals, id: \.self) { manual in
+                            let manualName: String = switch manual{
+                            case .s60:
+                                "S-60 Manual"
+                            case .fra:
+                                "FRA Manual"
+                            case .all:
+                                "All"
+                            }
+                            
+                            
+                            ManualButtonSelect(
+                                isSelected: selectedManual == manual,
+                                buttonName: manualName
+                            ) {
+                                selectedManual = manual
                             }
                         }
-                        .padding(.horizontal)
-                        .padding(.bottom, 10)
                     }
-                    HStack {
+               
+                }
+                .fixedSize(horizontal: false, vertical: true)
+                .padding(.horizontal)
+                .padding(.bottom, 10)
+                
+                HStack {
                         TextField("Ask a question", text: $userInput)
                             .font(.custom("Helvetica", size: 18))
-                            .foregroundStyle(.black)
+                            .foregroundStyle(Color.t900)
                             .focused($isTextFieldFocused)
                             .padding(.horizontal)
                         
@@ -155,10 +156,8 @@ struct ConversationScreen: View {
                             .shadow(radius: 5)
                     )
                     .padding(.horizontal)
-                    .ignoresSafeArea(.all)
                     .adaptsToKeyboard()
                 }
-
             }
             .padding(.top, 50)
             .padding(.bottom, 25)
@@ -168,7 +167,6 @@ struct ConversationScreen: View {
             .onChange(of: AppState.shared.viewedConversation) {
                 conversationViewModel.viewedConversation = AppState.shared.viewedConversation?.messages ?? []
             }
-        }
         .onAppear(){
             Task{
                 await conversationViewModel.getAllConversations(userId: AppState.shared.userId)

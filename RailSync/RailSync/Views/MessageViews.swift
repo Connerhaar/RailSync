@@ -17,7 +17,7 @@ struct userMessage: View {
                 .frame(alignment: .trailing)
                 .padding(.vertical, 12)
                 .padding(.horizontal, 20)
-                .background(RoundedRectangle(cornerRadius: 20).fill(Color.t200))
+                .background(RoundedRectangle(cornerRadius: 20).fill(Color.b200))
                 .frame(maxWidth: UIScreen.main.bounds.width * 0.8, alignment: .trailing)
                 .padding(.horizontal, 20)
         }

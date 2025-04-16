@@ -159,7 +159,7 @@ struct LoginScreen: View {
                         Button(action: {
                             Task {
                                 isLoading = true
-                                let isSuccessful = if pageState == .login{
+                                let _ = if pageState == .login{
                                     await loginViewModel.login(email: emailAddress, password: password){isSuccessful, statusCode in
                                         appState.isLoggedIn = isSuccessful
                                         invalidEmail = statusCode == 404
